@@ -85,6 +85,7 @@ client.on("message", message => {
         const voiceChannel = message.member.voice.channel
         if(!voiceChannel) return message.channel.send('You need to be in a voice channel')
         const permissions = voiceChannel.permissionsFor(message.client.user)
+        
         if(!permissions.has('CONNECT')) return message.channel.send("You don't have the correct permissions")
         if(!permissions.has('SPEAK')) return message.channel.send("You don't have the correct permissions")
         if(!args.length) return message.channel.send("You need to send the second argument")
@@ -182,12 +183,18 @@ client.on("message", message => {
         if(!permissions.has('CONNECT')) return message.channel.send("You don't have the correct permissions")
         if(!permissions.has('SPEAK')) return message.channel.send("You don't have the correct permissions")
         const server = serverQueue.get(message.guild.id)
-        if(!server.songs.length > 1) {
-          return message.reply(`There's no song to skip right now`)
+        if(!server) {
+          return message.reply("No songs in queue");
         }
-        server.songs.shift()
-        play(message.guild, server.songs[0]);
-        return message.reply(`Now skipped, and playing ***${server.songs[0].title}***`)
+        console.log(server.songs)
+        if(server.songs.length > 1) {
+          server.songs.shift()
+          play(message.guild, server.songs[0]);
+          return message.reply(`Now skipped, and playing ***${server.songs[0].title}***`)
+        } else {
+           return message.reply(`${server.songs[0].title} is the last song in queue`)
+        }
+        
     } else if(command === 'leave') {
       const voiceChannel = message.member.voice.channel
       if(!voiceChannel) return message.channel.send('You need to be in a voice channel')
